@@ -2,6 +2,7 @@ from env import host, username, password, get_db_url
 import os
 import pandas as pd 
 import numpy as np
+from sklearn.model_selection import train_test_split
 
 def acquire_zillow_data(use_cache=True):
     if os.path.exists('zillow.csv') and use_cache:
@@ -21,7 +22,22 @@ def acquire_zillow_data(use_cache=True):
     
     return df
 
+#########
+def remove_outliers(df, k, col_list):
+    for col in col_list:
+        
+        q1, q3 = df[col].quantile([.25, .75])
+        
+        iqr = q3 - q1
+        
+        upper_bound = q3 + k * iqr
+        lower_bound = q1 - k * iqr
+        
+        df = df[(df[col] > lower_bound) & (df[col] < upper_bound)]
+        
+    return df
 
+########
 def prepare_zillow(df):
     #just in case there are blanks
     df = df.replace(r'^\s*$', np.NaN, regex=True)
@@ -32,16 +48,40 @@ def prepare_zillow(df):
     # modify two columns
     df['fips'] = df.fips.apply(lambda fips: '0' + str(int(fips)))
     df['yearbuilt'] = df['yearbuilt'].astype(int)
+    df.yearbuilt = df.yearbuilt.astype(object)
 
     #create a new column named 'age', which is the difference of yearbuilt and 2017
     df['age'] = 2017-df['yearbuilt']
 
     df = df.rename(columns={
-                        'calculatedfinishedsquarefeet': 'sqft',
+                        'calculatedfinishedsquarefeet': 'area',
                         'bathroomcnt': 'baths',
                         'bedroomcnt': 'beds',
-                        'taxvaluedollarcnt':'tax_value'}
+                        'taxvaluedollarcnt':'tax_value',
+                        'taxamount': 'tax_amount'}
               )
+    # remove outliers.
+    remove_outliers(df, 1.5, ['beds', 'baths', 'area', 'tax_value', 'tax_amount'])
+    
+    # create dummy vars of fips id
+    dummy_df = pd.get_dummies(df.fips, drop_first=True)
+    # rename columns by actual county name
+    dummy_df.columns = ['Orange', 'Ventura']
+    # concatenate the dataframe with the 3 county columns to the original dataframe
+    df_dummies = pd.concat([df, dummy_df], axis = 1)
+    # drop fips columns
+    df = df_dummies.drop(columns = ['fips'])
+    
+    # train/validate/test split
+    train_validate, test = train_test_split(df, test_size=.2, random_state=123)
+    train, validate = train_test_split(train_validate, test_size=.3, random_state=123)
+    
+    return train, validate, test
 
-    return df
+#############
 
+def wrangled_zillow():
+    '''Acquire and prepare data from Zillow database for explore'''
+    train, validate, test = prepare_zillow(acquire_zillow_data())
+    
+    return train, validate, test
