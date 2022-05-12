@@ -30,4 +30,26 @@ In this repository, we will analyze, visualize and model various labeled dataset
 1. Modeling-Model Selection and Testing: We will learn how to select a model, and we will test the model on the unseen data sample (the out-of-sample data in the validate and then test datasets).
 1. Data Science Pipeline and Product Delivery: We will end with an end-to-end project practicing steps of the data science pipeline from planning through model selection and delivery.
 ***
+### Glossing Over Regression
 
+Regression is a supervised machine learning technique used to model the relationship of one or more features or independent variables, (one = simple regression, more = multiple regression) to one or more target or dependent variables, (one = univariate regression, more = multivariate regression). The variables are represented by continuous data.
+
+A regression algorithm attempts to find the function that best 'mimics' or 'models' the relationship between independent feature(s) and dependent target variable(s). The algorithm does this by finding the line (for simple regression) or plane (for multiple regression) that minimizes the errors in our predictions when compared to the labeled data. Once we acquire that function, it can be used to make predictions on new observations when they become available; we can simply run these new values of the independent variable(s) through the function for each observation to predict the dependent target variable(s).
+
+The algorithm attempts to find the “best” choices of values for the parameters, which in a linear regression model are the coefficients, $bi$, in order to make the formula as “accurate” as possible, i.e. minimize the error. There are different ways to define the error, but whichever evaluation metric we select, the algorithm finds the line of best fit by identifying the parameters that minimize that error.
+
+Once estimated, the parameters (intercept and coefficients) allow the value of the target variable to be obtained from the values of the feature variables.
+
+---
+##### Simple Linear Regression
+
+In the simple linear case, our feature is x and our target is y. The algorithm finds the parameters that minimize the error between the actual values and the estimated values. The parameters the algorithm estimates are the slope, β, and the y-intercept, α. ϵ is the error term or the residual value. The residual is the difference of the actual value from the predicted value.
+
+##### Multiple Linear Regression
+
+In a multiple linear regression case with n features, our features are x1 through xn and our target is y. The algorithm finds the parameters that minimize the error between the actual values and the estimated values. The parameters the algorithm estimates are the coefficients of the features, b1 through bn, and the y-intercept, 
+b0. ϵ is the error term or the residual value.
+
+##### Polynomial Regression
+
+In the case we have a polynomial function, we still have a linear model due to the fact that xi is in fact a feature and the coefficient/weight associated with that feature is still linear. To convert the original features into their higher order terms, we will use the PolynomialFeatures class provided by scikit-learn. Then, we train the model using Linear Regression.
