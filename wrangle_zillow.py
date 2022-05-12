@@ -1,9 +1,21 @@
+                                                                                              
+#  `7MMF'     A     `7MF'`7MM"""Mq.       db     `7MN.   `7MF' .g8"""bgd `7MMF'      `7MM"""YMM   # 
+#   `MA     ,MA     ,V    MM   `MM.     ;MM:      MMN.    M .dP'     `M   MM          MM    `7    #
+#    VM:   ,VVM:   ,V     MM   ,M9     ,V^MM.     M YMb   M dM'       `   MM          MM   d      #
+#     MM.  M' MM.  M'     MMmmdM9     ,M  `MM     M  `MN. M MM            MM          MMmmMM      #
+#     `MM A'  `MM A'      MM  YM.     AbmmmqMA    M   `MM.M MM.    `7MMF' MM      ,   MM   Y  ,   #
+#      :MM;    :MM;       MM   `Mb.  A'     VML   M     YMM `Mb.     MM   MM     ,M   MM     ,M   #
+#       VF      VF      .JMML. .JMM.AMA.   .AMMA.JML.    YM   `"bmmmdPY .JMMmmmmMMM .JMMmmmmMMM   #             
+#|-----------------------------------------------------------------------------------------------|#
+#|-----------------------------------------------------------------------------------------------|#
+# IMPORTS
 from env import host, username, password, get_db_url
 import os
 import pandas as pd 
 import numpy as np
 from sklearn.model_selection import train_test_split
-
+#|-----------------------------------------------------------------------------------------------|#
+#|-----------------------------------------------------------------------------------------------|#
 def acquire_zillow_data(use_cache=True):
     if os.path.exists('zillow.csv') and use_cache:
         print('Using cached CSV')
@@ -21,8 +33,7 @@ def acquire_zillow_data(use_cache=True):
     
     
     return df
-
-#########
+#|-----------------------------------------------------------------------------------------------|#
 def remove_outliers(df, k, col_list):
     for col in col_list:
         
@@ -36,8 +47,7 @@ def remove_outliers(df, k, col_list):
         df = df[(df[col] > lower_bound) & (df[col] < upper_bound)]
         
     return df
-
-########
+#|-----------------------------------------------------------------------------------------------|#
 def prepare_zillow(df):
     #just in case there are blanks
     df = df.replace(r'^\s*$', np.NaN, regex=True)
@@ -77,9 +87,7 @@ def prepare_zillow(df):
     train, validate = train_test_split(train_validate, test_size=.3, random_state=123)
     
     return train, validate, test
-
-#############
-
+#|-----------------------------------------------------------------------------------------------|#
 def wrangled_zillow():
     '''Acquire and prepare data from Zillow database for explore'''
     train, validate, test = prepare_zillow(acquire_zillow_data())
